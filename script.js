@@ -1,22 +1,96 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+var currentQuestion = 0;
+var currentScore = 0;
+var currentTime = 20;
+var counterTime;
+var startContainer = document.getElementById("container");
+var quizContainer = document.getElementById("quiz");
+var questionContainer = document.getElementById("questions");
+var resultsContainer = document.getElementById("results");
+var scoreContainer = document.getElementById("score");
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+function startQuiz() {
+  startContainer.setAttribute("class", "hide");
+  quizContainer.removeAttribute("class");
+  counterTime = setInterval(function () {
+    currentTime = currentTime - 1;
+    scoreContainer.innerHTML = currentTime + "s";
+    if (currentTime < 0) {
+      clearInterval(counterTime);
+      scoreContainer.innerHTML = "No Time Left Sorry";
+    }
+  }, 1000);
+  showCurrentQuestion();
+}
 
-    <title>Hello, world!</title>
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
+function checkAnswer(event) {
+  var answer = event.target.innerText;
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-  </body>
-</html>
+  var question = questions[currentQuestion];
+
+  if (answer === question.answer) {
+    alert("Correct!");
+  } else {
+    currentTime = currentTime - 5;
+    alert("Wrong!");
+  }
+  currentQuestion++;
+  if (currentQuestion >= questions.length) {
+    finishQuiz();
+  } else {
+    showCurrentQuestion();
+  }
+}
+
+function showScore() {}
+
+function finishQuiz() {
+  clearInterval(interval);
+}
+var questions = [{
+    question: "What is my favorite area in Miami?",
+    options: ["South Beach", "Hialeah", "Doral", "Kendall"],
+    answer: "Doral",
+  },
+  {
+    question: "In what month am I born in?",
+    options: ["January", "November", "June", "October"],
+    answer: "October",
+  },
+  {
+    question: "What is my favorite food?",
+    options: [
+      "Haitian Specialty Griot",
+      "Pizza",
+      "Alfredo Pasta",
+      "Ramen Noodles",
+    ],
+    answer: "Haitian Specialty Griot",
+  },
+  {
+    question: "What is the best city in the U.S",
+    options: ["Los Angeles", "New York", "Miami", "Atlanta"],
+    answer: "Miami",
+  },
+];
+
+function showCurrentQuestion() {
+  var question = questions[currentQuestion];
+  questionContainer.innerHTML = "";
+
+  var questionTitle = document.createElement("h1");
+  questionTitle.innerText = question.question;
+  questionContainer.appendChild(questionTitle);
+
+  var optionsList = document.createElement("ul");
+
+  for (var i = 0; i < question.options.length; i++) {
+    var questionLi = document.createElement("li");
+    var button = document.createElement("button");
+    button.addEventListener("click", checkAnswer);
+    button.innerText = question.options[i];
+    questionLi.appendChild(button);
+    optionsList.appendChild(questionLi);
+  }
+  questionContainer.appendChild(optionsList);
+}
+
